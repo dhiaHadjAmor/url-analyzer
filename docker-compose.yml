@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: crawler
+    volumes:
+      - db_data:/var/lib/mysql
+
+  server:
+    build: ./server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DB_USER: root
+      DB_PASS: root
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: crawler
+      PORT: 8080
+
+  client:
+    build: ./client
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  db_data:
