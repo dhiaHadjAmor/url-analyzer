@@ -4,11 +4,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
 	"server/db"
 	"server/models"
+	"server/routes"
 )
 
 func main() {
@@ -21,18 +21,13 @@ func main() {
 	db.Connect()
 
 	// Auto-migrate models
-	if err := db.DB.AutoMigrate(&models.URL{}, &models.URLResult{}); err != nil {
+	if err := db.DB.AutoMigrate(&models.URL{}, &models.URLResult{}, &models.BrokenLink{}); err != nil {
 		log.Fatal("❌ Failed to migrate database schema:", err)
 	}
 	log.Println("✅ Database migration complete")
 
-	// Setup Gin
-	router := gin.Default()
+	router := routes.SetupRouter()
 
-	// Add a basic health check route
-	router.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{"status": "ok"})
-	})
 
 	// Start server on PORT from env or default to 8080
 	port := os.Getenv("PORT")

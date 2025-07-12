@@ -1,15 +1,15 @@
 package models
 
 type URLResult struct {
-	ID            uint `gorm:"primaryKey"`
-	URLID         uint `json:"url_id"`
-	HTMLVersion   string
-	PageTitle     string
+	ID            uint         `gorm:"primaryKey"`
+	URLID         uint         `json:"urlId"`
+	HTMLVersion   string       `json:"htmlVersion"`
+	PageTitle     string       `json:"pageTitle"`
 	Headings      HeadingCount `gorm:"embedded" json:"headings"`
-	LinksInternal int
-	LinksExternal int
-	LinksBroken   int
-	HasLoginForm  bool
+	LinksInternal int          `json:"linksInternal"`
+	LinksExternal int          `json:"linksExternal"`
+	LinksBroken   int          `json:"linksBroken"`
+	HasLoginForm  bool         `json:"hasLoginForm"`
 }
 
 type HeadingCount struct {

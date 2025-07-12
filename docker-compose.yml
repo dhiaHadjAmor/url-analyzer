@@ -9,13 +9,19 @@ services:
       MYSQL_DATABASE: crawler
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
   server:
     build: ./server
     ports:
       - "8080:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       DB_USER: root
       DB_PASS: root
