@@ -3,11 +3,16 @@ package routes
 import (
 	"server/controllers"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
+	
+	// CORS middleware
+  	router.Use(cors.Default())
+
 
 	// Health check
 	router.GET("/health", func(c *gin.Context) {

@@ -1,9 +1,15 @@
-function App() {
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import DashboardPage from "./pages/DashboardPage/DashboardPage";
+
+const App = () => {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DashboardPage />} />
+        {/* <Route path="/urls/:id" element={<UrlDetailPage />} /> */}
+      </Routes>
+    </BrowserRouter>
   );
-}
+};
 
 export default App;
