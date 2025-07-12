@@ -55,10 +55,10 @@ func CrawlAndAnalyse(url models.URL) {
 	result.Headings.H6 = doc.Find("h6").Length()
 
 	// Links
-	internal, external, broken, brokenLinks := analyzeLinks(doc, url.Address, url.ID)
+	internal, external, brokenLinks := analyzeLinks(doc, url.Address, url.ID, result.ID)
 	result.LinksInternal = internal
 	result.LinksExternal = external
-	result.LinksBroken = broken
+	
 
 	if len(brokenLinks) > 0 {
 		db.DB.Create(&brokenLinks)
@@ -92,7 +92,7 @@ func detectLoginForm(doc *goquery.Document) bool {
 }
 
 
-func analyzeLinks(doc *goquery.Document, baseAddress string, urlID uint) (internal int, external int, broken int, brokenLinks []models.BrokenLink) {
+func analyzeLinks(doc *goquery.Document, baseAddress string, urlID uint, resultId uint) (internal int, external int, brokenLinks []models.BrokenLink) {
 	seen := make(map[string]bool)
 	baseURL, _ := url.Parse(baseAddress)
 
@@ -118,7 +118,6 @@ func analyzeLinks(doc *goquery.Document, baseAddress string, urlID uint) (intern
 		client := http.Client{Timeout: 5 * time.Second}
 		resp, err := client.Head(fullURL)
 		if err != nil || (resp != nil && resp.StatusCode >= 400) {
-			broken++
 
 			statusCode := 0
 			if resp != nil {
@@ -128,6 +127,7 @@ func analyzeLinks(doc *goquery.Document, baseAddress string, urlID uint) (intern
 
 			brokenLinks = append(brokenLinks, models.BrokenLink{
 				URLID:  urlID,
+				URLResultID: resultId,
 				Link:   fullURL,
 				Status: statusCode,
 			})

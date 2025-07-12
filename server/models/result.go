@@ -8,7 +8,7 @@ type URLResult struct {
 	Headings      HeadingCount `gorm:"embedded" json:"headings"`
 	LinksInternal int          `json:"linksInternal"`
 	LinksExternal int          `json:"linksExternal"`
-	LinksBroken   int          `json:"linksBroken"`
+	BrokenLinks   []BrokenLink `gorm:"foreignKey:URLResultID" json:"brokenLinks"`
 	HasLoginForm  bool         `json:"hasLoginForm"`
 }
 

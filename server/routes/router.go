@@ -16,6 +16,8 @@ func SetupRouter() *gin.Engine {
 
 	// URL routes
 	router.POST("/analyse", controllers.AnalyseURL)
+	router.GET("/urls", controllers.GetURLs)
+
 
 	return router
 }

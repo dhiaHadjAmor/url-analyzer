@@ -2,7 +2,10 @@ package controllers
 
 import (
 	"net/http"
+	"server/db"
+	"server/models"
 	"server/services"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,4 +29,48 @@ func AnalyseURL(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, url)
+}
+
+func GetURLs(c *gin.Context) {
+	// Pagination params (default to page 1, size 10)
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, _ := strconv.Atoi(pageStr)
+	limit, _ := strconv.Atoi(limitStr)
+	offset := (page - 1) * limit
+
+	var urls []models.URL
+
+	// Preload result for summary data
+	if err := db.DB.Preload("Results.BrokenLinks").Offset(offset).Limit(limit).Find(&urls).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch URLs"})
+		return
+	}
+
+	// Transform result
+	var response []gin.H
+	for _, u := range urls {
+		var res models.URLResult
+		if len(u.Results) > 0 {
+			res = u.Results[len(u.Results)-1] // latest result
+		}
+		response = append(response, gin.H{
+			"id":             u.ID,
+			"address":        u.Address,
+			"status":         u.Status,
+			"pageTitle":     res.PageTitle,
+			"htmlVersion":   res.HTMLVersion,
+			"linksInternal": res.LinksInternal,
+			"linksExternal": res.LinksExternal,
+			"brokenLinks":   res.BrokenLinks,
+			"createdAt":     u.CreatedAt,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"page":     page,
+		"limit":    limit,
+		"results":  response,
+	})
 }
