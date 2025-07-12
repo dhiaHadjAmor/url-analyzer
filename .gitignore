@@ -13,3 +13,8 @@
 # Env
 .env
 server/.env
+client/.env
+
+# --- Frontend ---
+client/node_modules/
+client/dist/

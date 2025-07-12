@@ -1,11 +1,17 @@
 # URL Analyzer
 
-A fullstack web application to crawl and analyze metadata and link structure of webpages.
+A fullstack web application to crawl and analyze webpage metadata, heading structure, links, and accessibility indicators.
 
-This is the initial backend scaffold using Go and Gin.
+This app is built as part of a fullstack evaluation challenge, with focus on clean architecture, API design, responsive UI, and a clear commit history.
 
-## Getting Started
+---
 
-```bash
-cd server
-go run main.go
+## 🛠 Tech Stack
+
+- **Frontend**: React + Vite + TypeScript, Tailwind CSS
+- **Backend**: Go with Gin
+- **Database**: MySQL
+
+---
+
+## 📁 Project Structure
