@@ -1,6 +1,6 @@
 import { Trash2, RotateCcw, Pause } from "lucide-react";
 import Button from "../../../../components/Button";
-import type { BulkAction } from "../../../../types/Url";
+import type { BulkAction } from "../../../../lib/types";
 
 type BulkActionsBarProps = {
   selectedCount: number;

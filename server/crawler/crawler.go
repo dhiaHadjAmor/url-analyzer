@@ -60,14 +60,24 @@ func CrawlAndAnalyse(url models.URL) {
 	result.LinksExternal = external
 	
 
-	if len(brokenLinks) > 0 {
-		db.DB.Create(&brokenLinks)
-	}
+
 	// Save result
 	if err := db.DB.Create(&result).Error; err != nil {
 		log.Println("❌ Failed to save result:", err)
 		db.DB.Model(&url).Update("status", "error")
 		return
+	}
+
+	// Assign the result ID to broken links
+	for i := range brokenLinks {
+		brokenLinks[i].URLResultID = result.ID
+	}
+
+	// Save broken links
+	if len(brokenLinks) > 0 {
+		if err := db.DB.Create(&brokenLinks).Error; err != nil {
+			log.Println("❌ Failed to save broken links:", err)
+		}
 	}
 
 	db.DB.Model(&url).Update("status", "done")
@@ -116,10 +126,10 @@ func analyzeLinks(doc *goquery.Document, baseAddress string, urlID uint, resultI
 		}
 
 		client := http.Client{Timeout: 5 * time.Second}
-		resp, err := client.Head(fullURL)
+		resp, err := client.Get(fullURL)
 		if err != nil || (resp != nil && resp.StatusCode >= 400) {
 
-			statusCode := 0
+			statusCode := 404
 			if resp != nil {
 				statusCode = resp.StatusCode
 				resp.Body.Close()

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SortOrder, UrlSortField } from "../../../types/Url";
+import type { SortOrder, UrlSortField } from "../../../lib/types";
 
 type TableQueryParams = {
   page: number;

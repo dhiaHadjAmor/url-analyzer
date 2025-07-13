@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Spinner from "../../../../components/Spinner";
 import { useUrlsQuery } from "../../../../hooks/queries/useUrlsQuery";
-import type { BulkAction, UrlSortField } from "../../../../types/Url";
+import type { BulkAction, UrlSortField } from "../../../../lib/types";
 import useTableQueryParams from "../../hooks/useTableQueryParams";
 import SearchInput from "./SearchInput";
 import UrlResultsTable from "./UrlResultsTable/UrlResultsTable";

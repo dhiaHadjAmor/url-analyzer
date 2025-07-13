@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { UrlEntry, UrlResult, UrlStatus } from "../../../../../types/Url";
+import type { UrlEntry, UrlResult, UrlStatus } from "../../../../../lib/types";
 
 export type UrlColumn = {
   key: keyof UrlEntry | keyof UrlResult | "checkbox";

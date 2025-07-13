@@ -39,6 +39,7 @@ func SetupRouter() *gin.Engine {
 	{
 		protected.POST("/analyse", controllers.AnalyseURL)
 		protected.GET("/urls", controllers.GetUrls)
+		protected.GET("/urls/:id", controllers.GetUrlDetails)
 		protected.POST("/urls/rerun", controllers.RerunUrlsHandler)
 		protected.POST("/urls/stop", controllers.StopUrlsHandler)
 		protected.DELETE("/urls", controllers.DeleteUrlsHandler)

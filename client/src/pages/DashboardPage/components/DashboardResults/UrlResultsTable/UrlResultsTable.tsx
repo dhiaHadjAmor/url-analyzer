@@ -2,11 +2,13 @@ import type {
   SortOrder,
   UrlEntry,
   UrlSortField,
-} from "../../../../../types/Url";
+} from "../../../../../lib/types";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import TableCell from "../../../../../components/TableCell";
 import { mapSortOrderToAria } from "../../../../../lib/utils";
 import { getTableColumns } from "./tableColumns";
+import { URLS_ROUTE } from "../../../../../lib/routes";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   urls: UrlEntry[];
@@ -29,6 +31,8 @@ const UrlResultsTable = ({
   toggleHeader,
   toggleSelection,
 }: Props) => {
+  const navigate = useNavigate();
+
   const handleSort = (field: UrlSortField) => {
     onSortChange(field);
   };
@@ -83,7 +87,8 @@ const UrlResultsTable = ({
         {urls.map((url) => (
           <tr
             key={url.id}
-            className="border-b hover:bg-gray-50 transition"
+            onClick={() => navigate(`${URLS_ROUTE}/${url.id}`)}
+            className="border-b hover:bg-gray-100  cursor-pointer transition"
             data-testid={`row-${url.id}`}
           >
             {columns.map((col) => (

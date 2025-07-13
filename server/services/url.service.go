@@ -58,7 +58,8 @@ func GetPaginatedUrls(params types.UrlQueryParams) (types.PaginatedUrls, error) 
 
 	query := db.DB.
 		Model(&models.URL{}).
-		Preload("Result")
+		Preload("Result").
+		Preload("Result.BrokenLinks")
 
 	if params.Search != "" {
 		searchPattern := "%" + params.Search + "%"
@@ -116,12 +117,68 @@ func StopUrls(ids []uint) error {
 
 func DeleteUrls(ids []uint) error {
 	return db.DB.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Where("url_id IN ?", ids).Delete(&models.URLResult{}).Error; err != nil {
+		// Find related result IDs
+		var resultIDs []uint
+		if err := tx.Model(&models.URLResult{}).
+			Where("url_id IN ?", ids).
+			Pluck("id", &resultIDs).Error; err != nil {
 			return err
 		}
-		if err := tx.Where("id IN ?", ids).Delete(&models.URL{}).Error; err != nil {
+
+		// Delete broken links
+		if len(resultIDs) > 0 {
+			if err := tx.Where("url_result_id IN ?", resultIDs).
+				Delete(&models.BrokenLink{}).Error; err != nil {
+				return err
+			}
+		}
+
+		// Delete url_results
+		if err := tx.Where("url_id IN ?", ids).
+			Delete(&models.URLResult{}).Error; err != nil {
 			return err
 		}
+
+		// Delete urls
+		if err := tx.Where("id IN ?", ids).
+			Delete(&models.URL{}).Error; err != nil {
+			return err
+		}
+
 		return nil
 	})
+}
+
+
+func GetUrlDetails(id uint) (map[string]interface{}, error) {
+	var url models.URL
+
+	// Load URL and associated result + broken links
+	if err := db.DB.Preload("Result.BrokenLinks").First(&url, id).Error; err != nil {
+		return nil, err
+	}
+
+	if url.Result.ID == 0 {
+		return map[string]interface{}{
+			"id":     url.ID,
+			"status": url.Status,
+			"error":  "No result available",
+		}, nil
+	}
+
+	result := url.Result
+
+	return map[string]interface{}{
+		"id":             url.ID,
+		"address":        url.Address,
+		"status":         url.Status,
+		"createdAt":      url.CreatedAt,
+		"pageTitle":      result.PageTitle,
+		"htmlVersion":    result.HTMLVersion,
+		"hasLoginForm":   result.HasLoginForm,
+		"headings":       result.Headings,
+		"linksInternal":  result.LinksInternal,
+		"linksExternal":  result.LinksExternal,
+		"brokenLinks":    result.BrokenLinks,
+	}, nil
 }

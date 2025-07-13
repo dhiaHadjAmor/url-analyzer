@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { request } from "../../lib/api";
 import { URLS_ROUTE } from "../../lib/routes";
-import type { UrlsResponse } from "../../types/Url";
+import type { UrlsResponse } from "../../lib/types";
 
 export const URLS_QUERY_KEY = "urls";
 
