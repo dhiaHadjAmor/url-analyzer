@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { UrlEntry, UrlResult, UrlStatus } from "../../../../../lib/types";
+import Spinner from "../../../../../components/Spinner";
 
 export type UrlColumn = {
   key: keyof UrlEntry | keyof UrlResult | "checkbox";
@@ -38,6 +39,7 @@ export const getTableColumns = ({
       <input
         type="checkbox"
         checked={isSelected(url.id)}
+        onClick={(e) => e.stopPropagation()}
         onChange={() => toggleSelection(url.id)}
         className="cursor-pointer"
       />
@@ -73,10 +75,13 @@ export const getTableColumns = ({
     sortable: true,
     render: (url) => (
       <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${
+        className={`flex px-2 py-1 rounded-full text-xs font-medium ${
           statusColors[url.status] || "bg-gray-100 text-gray-700"
         }`}
       >
+        {(url.status === "running" || url.status === "queued") && (
+          <Spinner size="sm" className="text-gray-700 mr-1" />
+        )}
         {url.status?.toUpperCase() || "—"}
       </span>
     ),

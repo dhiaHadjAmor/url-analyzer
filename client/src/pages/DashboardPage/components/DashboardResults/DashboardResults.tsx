@@ -6,7 +6,10 @@ import useTableQueryParams from "../../hooks/useTableQueryParams";
 import SearchInput from "./SearchInput";
 import UrlResultsTable from "./UrlResultsTable/UrlResultsTable";
 import useDebouncedValue from "../../../../hooks/useDebouncedValue";
-import { DEBOUNCE_TIME_IN_MS } from "../../../../lib/constants";
+import {
+  DEBOUNCE_TIME_IN_MS,
+  POLLING_INTERVAL,
+} from "../../../../lib/constants";
 import PaginationControls from "../../../../components/PaginationControls";
 import useSelectedUrls from "../../hooks/useUrlSelection";
 import BulkActionsBar from "./BulkActionsBar";
@@ -20,6 +23,7 @@ const DashboardResults = () => {
 
   const [searchValue, setSearchValue] = useState(params.search);
   const debouncedSearch = useDebouncedValue(searchValue, DEBOUNCE_TIME_IN_MS);
+  const [enablePolling, setEnablePolling] = useState<number | false>(false);
 
   useEffect(() => {
     setSearch(debouncedSearch);
@@ -28,7 +32,18 @@ const DashboardResults = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  const { data, isPending, isError } = useUrlsQuery(params);
+  const { data, isPending, isError } = useUrlsQuery({
+    params,
+    enablePolling,
+  });
+
+  useEffect(() => {
+    if (!data) return;
+    const shouldPoll = data.data.some((url) =>
+      ["queued", "running"].includes(url.status)
+    );
+    setEnablePolling(shouldPoll ? POLLING_INTERVAL : false);
+  }, [data]);
 
   // TODO: use Jotai store (or similar) for URL selection to avoid prop drilling
   // This will allow us to manage selected URLs across components without passing props down

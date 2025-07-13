@@ -5,6 +5,11 @@ import type { UrlsResponse } from "../../lib/types";
 
 export const URLS_QUERY_KEY = "urls";
 
+type UseUrlsQueryProps = {
+  params: UseUrlsQueryParams;
+  enablePolling?: number | false;
+};
+
 type UseUrlsQueryParams = {
   page: number;
   limit: number;
@@ -20,11 +25,12 @@ type UseUrlsQueryParams = {
  * @returns {Object} The query result containing URLs data.
  */
 
-export const useUrlsQuery = (params: UseUrlsQueryParams) => {
+export const useUrlsQuery = ({ params, enablePolling }: UseUrlsQueryProps) => {
   return useQuery({
     queryKey: [URLS_QUERY_KEY, params],
     queryFn: () =>
       request<UrlsResponse>({ method: "GET", url: URLS_ROUTE, params }),
     placeholderData: (keepPreviousData) => keepPreviousData,
+    refetchInterval: enablePolling,
   });
 };

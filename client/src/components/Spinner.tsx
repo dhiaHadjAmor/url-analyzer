@@ -1,13 +1,21 @@
 import { LoaderCircle } from "lucide-react";
 
-const Spinner = () => {
+type SpinnerProps = {
+  className?: string;
+  size?: "sm" | "md";
+};
+
+const Spinner = ({ className = "", size = "md" }: SpinnerProps) => {
+  const sizeClasses = size === "sm" ? "w-4 h-4" : "w-6 h-6";
+
   return (
-    <div className="flex items-center justify-center h-full">
-      <LoaderCircle
-        className="animate-spin h-6 w-6 text-white"
-        aria-label="Loading"
-      />
-    </div>
+    <span
+      className={`inline-flex items-center animate-spin ${sizeClasses} ${className}`}
+      role="status"
+      aria-label="Loading"
+    >
+      <LoaderCircle className="w-full h-full text-current" />
+    </span>
   );
 };
 
