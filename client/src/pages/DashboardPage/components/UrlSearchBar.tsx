@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { isValidUrl } from "../../../lib/utils";
-import { useAnalyseUrlMutation } from "../../../queries/useAnalyseUrlMutation";
+import { useAnalyseUrlMutation } from "../../../hooks/mutations/useAnalyseUrlMutation";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 

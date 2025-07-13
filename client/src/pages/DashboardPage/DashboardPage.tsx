@@ -1,5 +1,6 @@
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import DashboardResults from "./components/DashboardResults/DashboardResults";
 import UrlSearchBar from "./components/UrlSearchBar";
 
 const DashboardPage = () => {
@@ -8,13 +9,13 @@ const DashboardPage = () => {
       {/* TODO: move the Header and Footer to a Layout component */}
       <Header />
 
-      <main className="flex-grow container mx-auto px-4">
-        <UrlSearchBar />
-
-        {/* TODO: Add UrlTable here */}
-        <section aria-label="Dashboard Results Table">
-          <p className="text-gray-500">No data loaded yet.</p>
+      <main className="flex-grow container mx-auto px-4 max-w-6xl">
+        <section className="bg-white shadow-md rounded-md p-6 mb-6 w-full">
+          <h2 className="text-xl font-semibold mb-4">Analyze a Website</h2>
+          <UrlSearchBar />
         </section>
+
+        <DashboardResults />
       </main>
 
       <Footer />

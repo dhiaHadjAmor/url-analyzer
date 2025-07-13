@@ -1,8 +1,8 @@
 package models
 
 type URLResult struct {
-	ID            uint         `gorm:"primaryKey"`
-	URLID         uint         `json:"urlId"`
+	ID            uint         `gorm:"primaryKey" json:"id"`
+	URLID         uint         `gorm:"uniqueIndex" json:"urlId"`
 	HTMLVersion   string       `json:"htmlVersion"`
 	PageTitle     string       `json:"pageTitle"`
 	Headings      HeadingCount `gorm:"embedded" json:"headings"`

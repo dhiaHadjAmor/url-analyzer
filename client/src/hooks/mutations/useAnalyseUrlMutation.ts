@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { request } from "../lib/api";
-import { URLS_QUERY_KEY } from "./useUrlsQuery";
-import { ANALYSE_URL_ROUTE } from "../lib/routes";
+import { request } from "../../lib/api";
+import { URLS_QUERY_KEY } from "../queries/useUrlsQuery";
+import { ANALYSE_URL_ROUTE } from "../../lib/routes";
 
 /**
  * Custom hook to analyse a URL.

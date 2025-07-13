@@ -6,3 +6,9 @@ export const isValidUrl = (url: string) => {
     return false;
   }
 };
+
+export const mapSortOrderToAria = (order: "asc" | "desc" | undefined) => {
+  if (order === "asc") return "ascending";
+  if (order === "desc") return "descending";
+  return "none";
+};

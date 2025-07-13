@@ -9,7 +9,7 @@ import (
 
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
-	
+
 	// CORS middleware
   	router.Use(cors.Default())
 
@@ -21,7 +21,7 @@ func SetupRouter() *gin.Engine {
 
 	// URL routes
 	router.POST("/analyse", controllers.AnalyseURL)
-	router.GET("/urls", controllers.GetURLs)
+	router.GET("/urls", controllers.GetUrls)
 
 
 	return router
