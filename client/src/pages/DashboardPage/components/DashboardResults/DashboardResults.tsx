@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import Spinner from "../../../../components/Spinner";
 import { useUrlsQuery } from "../../../../hooks/queries/useUrlsQuery";
-import type { UrlSortField } from "../../../../types/Url";
+import type { BulkAction, UrlSortField } from "../../../../types/Url";
 import useTableQueryParams from "../../hooks/useTableQueryParams";
 import SearchInput from "./SearchInput";
 import UrlResultsTable from "./UrlResultsTable/UrlResultsTable";
 import useDebouncedValue from "../../../../hooks/useDebouncedValue";
 import { DEBOUNCE_TIME_IN_MS } from "../../../../lib/constants";
 import PaginationControls from "../../../../components/PaginationControls";
+import useSelectedUrls from "../../hooks/useUrlSelection";
+import BulkActionsBar from "./BulkActionsBar";
+import { useDeleteUrlsMutation } from "../../../../hooks/mutations/useDeleteUrlsMutation";
+import { useRerunUrlsMutation } from "../../../../hooks/mutations/useRerunUrlsMutation";
+import { useStopUrlsMutation } from "../../../../hooks/mutations/useStopUrlsMutation";
 
 const DashboardResults = () => {
   const { params, setPage, setSortBy, setSortOrder, setSearch, setLimit } =
@@ -24,6 +29,39 @@ const DashboardResults = () => {
   }, [debouncedSearch]);
 
   const { data, isPending, isError } = useUrlsQuery(params);
+
+  // TODO: use Jotai store (or similar) for URL selection to avoid prop drilling
+  // This will allow us to manage selected URLs across components without passing props down
+  const {
+    selectedIds,
+    toggleSelection,
+    selectAll,
+    clearSelection,
+    isSelected,
+  } = useSelectedUrls();
+
+  const { mutate: mutateDeleteUrls, isPending: isDeletingUrls } =
+    useDeleteUrlsMutation();
+  const { mutate: mutateRerunUrls, isPending: isRerunningUrls } =
+    useRerunUrlsMutation();
+  const { mutate: mutateStopUrls, isPending: isStoppingUrls } =
+    useStopUrlsMutation();
+
+  const handleBulkAction = (action: BulkAction) => {
+    const ids = Array.from(selectedIds);
+
+    switch (action) {
+      case "rerun":
+        mutateRerunUrls(ids, { onSuccess: () => clearSelection() });
+        break;
+      case "stop":
+        mutateStopUrls(ids, { onSuccess: () => clearSelection() });
+        break;
+      case "delete":
+        mutateDeleteUrls(ids, { onSuccess: () => clearSelection() });
+        break;
+    }
+  };
 
   if (isPending) {
     return (
@@ -55,20 +93,46 @@ const DashboardResults = () => {
     }
   };
 
+  const handleHeaderToggle = () => {
+    if (selectedIds.size > 0) {
+      clearSelection();
+    } else {
+      selectAll(data.data.map((url) => url.id));
+    }
+  };
+
+  const isStopActionDisabled = data.data
+    .filter((url) => selectedIds.has(url.id))
+    .some((url) => url.status !== "running" && url.status !== "queued");
+
   return (
     <section className="mt-8" aria-label="Analyzed URLs Table">
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <h2 className="text-lg font-semibold pl-8">Analyzed URLs</h2>
         <div className="overflow-x-auto p-8 pt-4">
-          <SearchInput
-            value={searchValue}
-            onChange={(value) => setSearchValue(value)}
-          />
+          <div className="mb-4 flex justify-between items-center">
+            <SearchInput
+              value={searchValue}
+              onChange={(value) => setSearchValue(value)}
+            />
+            <BulkActionsBar
+              selectedCount={selectedIds.size}
+              onAction={handleBulkAction}
+              isRerunning={isRerunningUrls}
+              isStopping={isStoppingUrls}
+              isDeleting={isDeletingUrls}
+              isStopActionDisabled={isStopActionDisabled}
+            />
+          </div>
           <UrlResultsTable
             urls={data.data}
             sortBy={params.sortBy}
             sortOrder={params.sortOrder}
             onSortChange={handleSort}
+            isSelected={isSelected}
+            toggleSelection={toggleSelection}
+            toggleHeader={handleHeaderToggle}
+            isAllSelected={selectedIds.size === data.meta.total}
           />
           <PaginationControls
             currentPage={params.page}

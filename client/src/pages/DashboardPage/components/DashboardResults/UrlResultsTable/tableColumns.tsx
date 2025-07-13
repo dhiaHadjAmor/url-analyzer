@@ -2,11 +2,19 @@ import type { ReactNode } from "react";
 import type { UrlEntry, UrlResult, UrlStatus } from "../../../../../types/Url";
 
 export type UrlColumn = {
-  key: keyof UrlEntry | keyof UrlResult;
+  key: keyof UrlEntry | keyof UrlResult | "checkbox";
   label: string;
   sortable: boolean;
   render: (url: UrlEntry) => ReactNode;
+  renderHeader?: () => ReactNode;
   className?: string;
+};
+
+type TableColumnsProps = {
+  isSelected: (id: number) => boolean;
+  toggleSelection: (id: number) => void;
+  toggleHeader: () => void;
+  isAllSelected: boolean;
 };
 
 const statusColors: Record<UrlStatus, string> = {
@@ -16,7 +24,33 @@ const statusColors: Record<UrlStatus, string> = {
   error: "bg-red-100 text-red-800",
 };
 
-export const tableColumns: UrlColumn[] = [
+export const getTableColumns = ({
+  isSelected,
+  toggleSelection,
+  toggleHeader,
+  isAllSelected,
+}: TableColumnsProps): UrlColumn[] => [
+  {
+    key: "checkbox",
+    label: "",
+    sortable: false,
+    render: (url) => (
+      <input
+        type="checkbox"
+        checked={isSelected(url.id)}
+        onChange={() => toggleSelection(url.id)}
+        className="cursor-pointer"
+      />
+    ),
+    renderHeader: () => (
+      <input
+        type="checkbox"
+        checked={isAllSelected}
+        onChange={toggleHeader}
+        className="cursor-pointer"
+      />
+    ),
+  },
   {
     key: "address",
     label: "Address",

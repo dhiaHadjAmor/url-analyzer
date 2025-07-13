@@ -92,7 +92,7 @@ func RerunUrls(ids []uint) error {
 			if err := tx.Model(&models.URL{}).Where("id = ?", id).
 				Updates(map[string]interface{}{
 					"status":     "queued",
-					"updated_at": time.Now().Unix(),
+					"updated_at": time.Now(),
 				}).Error; err != nil {
 				return err
 			}

@@ -10,7 +10,7 @@ type ButtonProps = {
   isLoading?: boolean;
   testId?: string;
   ariaLabel?: string;
-  variant?: "primary" | "outline" | "icon";
+  variant?: "primary" | "outline" | "icon" | "danger";
   size?: "sm" | "md";
 };
 
@@ -31,14 +31,21 @@ const Button = ({
 
   const sizeStyles = size === "sm" ? "p-1.5 text-sm" : "px-5 py-2";
 
-  const variantStyles = {
+  const variantStyles: Record<NonNullable<ButtonProps["variant"]>, string> = {
     primary:
       disabled || isLoading
         ? "bg-gray-400 cursor-not-allowed text-white"
         : "bg-blue-600 hover:bg-blue-700 text-white",
+
     outline:
       "border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-50",
+
     icon: "border border-gray-300 text-gray-700 hover:bg-gray-100 disabled:opacity-40",
+
+    danger:
+      disabled || isLoading
+        ? "bg-red-300 cursor-not-allowed text-white"
+        : "bg-red-600 hover:bg-red-700 text-white",
   };
 
   return (

@@ -27,6 +27,8 @@ export interface UrlsResponse {
   };
 }
 
-export type UrlSortField = keyof UrlEntry | keyof UrlResult;
+export type UrlSortField = keyof UrlEntry | keyof UrlResult | "checkbox";
 
 export type SortOrder = "asc" | "desc";
+
+export type BulkAction = "delete" | "rerun" | "stop";
