@@ -29,6 +29,7 @@ services:
       DB_PORT: 3306
       DB_NAME: crawler
       PORT: 8080
+      API_KEY: test-key
 
   client:
     build: ./client

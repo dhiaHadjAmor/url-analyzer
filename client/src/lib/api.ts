@@ -3,6 +3,8 @@ const API_BASE_URL =
 
 const defaultHeaders = {
   "Content-Type": "application/json",
+  // Use the API key from environment variables or a default value for testing
+  "x-api-key": import.meta.env.VITE_API_KEY || "test-key",
 };
 
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";

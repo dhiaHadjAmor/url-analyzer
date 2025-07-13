@@ -136,3 +136,13 @@ func analyzeLinks(doc *goquery.Document, baseAddress string, urlID uint, resultI
 
 	return
 }
+
+func AnalyzeUrlByID(id uint) error {
+	var url models.URL
+	if err := db.DB.First(&url, id).Error; err != nil {
+		return err
+	}
+
+	go CrawlAndAnalyse(url) // Run in goroutine for async behavior
+	return nil
+}

@@ -13,6 +13,11 @@ type URLRequest struct {
 	Address string `json:"address" binding:"required,url"`
 }
 
+type BulkUrlRequest struct {
+	IDs []uint `json:"ids"`
+}
+
+
 func AnalyseURL(c *gin.Context) {
 	var req URLRequest
 
@@ -58,4 +63,49 @@ func GetUrls(c *gin.Context) {
 			"total": result.Total,
 		},
 	})
+}
+
+func RerunUrlsHandler(c *gin.Context) {
+	var req BulkUrlRequest
+	if err := c.ShouldBindJSON(&req); err != nil || len(req.IDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing IDs"})
+		return
+	}
+
+	if err := services.RerunUrls(req.IDs); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to re-analyze URLs"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Re-analysis started"})
+}
+
+func StopUrlsHandler(c *gin.Context) {
+	var req BulkUrlRequest
+	if err := c.ShouldBindJSON(&req); err != nil || len(req.IDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing IDs"})
+		return
+	}
+
+	if err := services.StopUrls(req.IDs); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to stop analysis"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Analysis stopped"})
+}
+
+func DeleteUrlsHandler(c *gin.Context) {
+	var req BulkUrlRequest
+	if err := c.ShouldBindJSON(&req); err != nil || len(req.IDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or missing IDs"})
+		return
+	}
+
+	if err := services.DeleteUrls(req.IDs); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete URLs"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "URLs deleted"})
 }

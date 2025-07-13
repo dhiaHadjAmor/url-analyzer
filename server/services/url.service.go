@@ -7,6 +7,9 @@ import (
 	"server/models"
 	"server/types"
 	"strings"
+	"time"
+
+	"gorm.io/gorm"
 )
 
 func CreateURL(address string) (*models.URL, error) {
@@ -80,4 +83,45 @@ func GetPaginatedUrls(params types.UrlQueryParams) (types.PaginatedUrls, error) 
 		Urls:  urls,
 		Total: total,
 	}, nil
+}
+
+func RerunUrls(ids []uint) error {
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		for _, id := range ids {
+			// Reset the status and updated time
+			if err := tx.Model(&models.URL{}).Where("id = ?", id).
+				Updates(map[string]interface{}{
+					"status":     "queued",
+					"updated_at": time.Now().Unix(),
+				}).Error; err != nil {
+				return err
+			}
+
+			// clear previous results
+			if err := tx.Where("url_id = ?", id).Delete(&models.URLResult{}).Error; err != nil {
+				return err
+			}
+
+			// Start analysis again
+			go crawler.AnalyzeUrlByID(id)
+		}
+		return nil
+	})
+}
+
+func StopUrls(ids []uint) error {
+	return db.DB.Model(&models.URL{}).Where("id IN ?", ids).
+		Update("status", "error").Error
+}
+
+func DeleteUrls(ids []uint) error {
+	return db.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("url_id IN ?", ids).Delete(&models.URLResult{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("id IN ?", ids).Delete(&models.URL{}).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }

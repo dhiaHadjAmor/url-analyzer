@@ -10,7 +10,7 @@ const DashboardPage = () => {
       <Header />
 
       <main className="flex-grow container mx-auto px-4 max-w-6xl">
-        <section className="bg-white shadow-md rounded-md p-6 mb-6 w-full">
+        <section className="bg-white shadow-md rounded-md p-6 mb-6 w-full flex flex-col items-center">
           <h2 className="text-xl font-semibold mb-4">Analyze a Website</h2>
           <UrlSearchBar />
         </section>
