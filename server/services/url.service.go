@@ -98,7 +98,12 @@ func RerunUrls(ids []uint) error {
 				return err
 			}
 
-			// clear previous results
+			//  delete broken links for the result(s) of this URL
+			if err := tx.Where("url_id = ?", id).Delete(&models.BrokenLink{}).Error; err != nil {
+				return err
+			}
+
+			//  delete the result itself
 			if err := tx.Where("url_id = ?", id).Delete(&models.URLResult{}).Error; err != nil {
 				return err
 			}
@@ -109,6 +114,7 @@ func RerunUrls(ids []uint) error {
 		return nil
 	})
 }
+
 
 func StopUrls(ids []uint) error {
 	return db.DB.Model(&models.URL{}).Where("id IN ?", ids).

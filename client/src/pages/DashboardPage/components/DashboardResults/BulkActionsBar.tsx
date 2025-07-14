@@ -23,7 +23,9 @@ const BulkActionsBar = ({
 
   return (
     <div className="flex justify-between items-center  bg-gray-50 text-sm">
-      <span className="mr-2">{selectedCount} Selected Row(s)</span>
+      <span className="hidden md:block mr-2">
+        {selectedCount} Selected Row(s)
+      </span>
       <div className="flex gap-2">
         <Button
           isLoading={isRerunning}

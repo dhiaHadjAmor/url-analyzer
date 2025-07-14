@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { UrlEntry, UrlResult, UrlStatus } from "../../../../../lib/types";
 import Spinner from "../../../../../components/Spinner";
+import Checkbox from "../../../../../components/Checkbox";
 
 export type UrlColumn = {
   key: keyof UrlEntry | keyof UrlResult | "checkbox";
@@ -36,21 +37,14 @@ export const getTableColumns = ({
     label: "",
     sortable: false,
     render: (url) => (
-      <input
-        type="checkbox"
+      <Checkbox
         checked={isSelected(url.id)}
         onClick={(e) => e.stopPropagation()}
         onChange={() => toggleSelection(url.id)}
-        className="cursor-pointer"
       />
     ),
     renderHeader: () => (
-      <input
-        type="checkbox"
-        checked={isAllSelected}
-        onChange={toggleHeader}
-        className="cursor-pointer"
-      />
+      <Checkbox checked={isAllSelected} onChange={toggleHeader} />
     ),
   },
   {
@@ -77,7 +71,7 @@ export const getTableColumns = ({
       <span
         className={`flex px-2 py-1 rounded-full text-xs font-medium ${
           statusColors[url.status] || "bg-gray-100 text-gray-700"
-        }`}
+        } max-w-24`}
       >
         {(url.status === "running" || url.status === "queued") && (
           <Spinner size="sm" className="text-gray-700 mr-1" />
@@ -90,7 +84,7 @@ export const getTableColumns = ({
     key: "pageTitle",
     label: "Page Title",
     sortable: true,
-    className: "whitespace-nowrap max-w-48 truncate",
+    className: "whitespace-nowrap lg:max-w-40 truncate",
     render: (url) => (
       <span title={url.result?.pageTitle || ""}>
         {url.result?.pageTitle || "—"}

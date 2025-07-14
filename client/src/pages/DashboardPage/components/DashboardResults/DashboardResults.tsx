@@ -32,7 +32,7 @@ const DashboardResults = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch]);
 
-  const { data, isPending, isError } = useUrlsQuery({
+  const { data, isPending, isFetching, isError } = useUrlsQuery({
     params,
     enablePolling,
   });
@@ -125,7 +125,7 @@ const DashboardResults = () => {
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <h2 className="text-lg font-semibold pl-8">Analyzed URLs</h2>
         <div className="overflow-x-auto p-8 pt-4">
-          <div className="mb-4 flex justify-between items-center">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4">
             <SearchInput
               value={searchValue}
               onChange={(value) => setSearchValue(value)}
@@ -140,6 +140,7 @@ const DashboardResults = () => {
             />
           </div>
           <UrlResultsTable
+            isFetching={isFetching}
             urls={data.data}
             sortBy={params.sortBy}
             sortOrder={params.sortOrder}

@@ -9,8 +9,10 @@ import { mapSortOrderToAria } from "../../../../../lib/utils";
 import { getTableColumns } from "./tableColumns";
 import { URLS_ROUTE } from "../../../../../lib/routes";
 import { useNavigate } from "react-router-dom";
+import Checkbox from "../../../../../components/Checkbox";
+import Spinner from "../../../../../components/Spinner";
 
-type Props = {
+type UrlResultsTableProps = {
   urls: UrlEntry[];
   sortBy: UrlSortField;
   sortOrder: SortOrder;
@@ -19,6 +21,7 @@ type Props = {
   toggleSelection: (id: number) => void;
   toggleHeader: () => void;
   isAllSelected: boolean;
+  isFetching: boolean;
 };
 
 const UrlResultsTable = ({
@@ -30,12 +33,21 @@ const UrlResultsTable = ({
   isAllSelected,
   toggleHeader,
   toggleSelection,
-}: Props) => {
+  isFetching,
+}: UrlResultsTableProps) => {
   const navigate = useNavigate();
 
   const handleSort = (field: UrlSortField) => {
     onSortChange(field);
   };
+
+  if (isFetching) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <Spinner />
+      </div>
+    );
+  }
 
   if (urls.length === 0) {
     return (
@@ -52,54 +64,77 @@ const UrlResultsTable = ({
   });
 
   return (
-    <table className="min-w-full table-fixed text-sm text-left text-gray-700 mt-4">
-      <thead className="bg-gray-100">
-        <tr>
-          {columns.map((col) => (
-            <th
-              key={col.key}
-              onClick={() => col.sortable && handleSort(col.key)}
-              className={`px-4 py-2 font-medium select-none ${
-                col.sortable ? "hover:underline cursor-pointer" : ""
-              }`}
-              scope="col"
-              aria-sort={
-                sortBy === col.key ? mapSortOrderToAria(sortOrder) : "none"
-              }
-            >
-              <div className="flex items-center gap-1">
-                {col.renderHeader ? col.renderHeader() : col.label}
-                {col.sortable && sortBy === col.key && (
-                  <>
-                    {sortOrder === "asc" ? (
-                      <ChevronUp size={14} />
-                    ) : (
-                      <ChevronDown size={14} />
-                    )}
-                  </>
-                )}
-              </div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {urls.map((url) => (
-          <tr
-            key={url.id}
-            onClick={() => navigate(`${URLS_ROUTE}/${url.id}`)}
-            className="border-b hover:bg-gray-100  cursor-pointer transition"
-            data-testid={`row-${url.id}`}
-          >
+    <>
+      {/* potential refactoring: create DesktopTable and CardView components */}
+
+      {/* Desktop table */}
+      <table className="min-w-full table-fixed text-sm text-left text-gray-700 mt-4 hidden lg:table">
+        <thead className="bg-gray-100">
+          <tr>
             {columns.map((col) => (
-              <TableCell key={col.key} className={col.className}>
-                {col.render(url)}
-              </TableCell>
+              <th
+                key={col.key}
+                onClick={() => col.sortable && handleSort(col.key)}
+                className={`px-4 py-2 font-medium select-none ${
+                  col.sortable ? "hover:underline cursor-pointer" : ""
+                }`}
+                scope="col"
+                aria-sort={
+                  sortBy === col.key ? mapSortOrderToAria(sortOrder) : "none"
+                }
+              >
+                <div className="flex items-center gap-1">
+                  {col.renderHeader ? col.renderHeader() : col.label}
+                  {sortBy === col.key &&
+                    (sortOrder === "asc" ? (
+                      <ChevronUp className="w-3 h-3" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3" />
+                    ))}
+                </div>
+              </th>
             ))}
           </tr>
+        </thead>
+        <tbody>
+          {urls.map((url) => (
+            <tr
+              key={url.id}
+              onClick={() => navigate(`${URLS_ROUTE}/${url.id}`)}
+              className="hover:bg-gray-50 cursor-pointer"
+            >
+              {columns.map((col) => (
+                <TableCell key={col.key} className={col.className}>
+                  {col.render(url)}
+                </TableCell>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Mobile/Tablet stacked cards */}
+      <div className="lg:hidden mt-4 space-y-4">
+        <div className="flex pl-4 items-center gap-2">
+          <Checkbox checked={isAllSelected} onChange={toggleHeader} />
+          <label>Select All</label>
+        </div>
+        {urls.map((url) => (
+          <div
+            key={url.id}
+            className="bg-white rounded-lg shadow p-4 text-sm cursor-pointer flex flex-wrap gap-y-4"
+            onClick={() => navigate(`${URLS_ROUTE}/${url.id}`)}
+          >
+            {columns.map((col) => (
+              <div key={col.key} className="w-1/2 md:w-1/3 break-words">
+                <div className="text-gray-500 font-medium">{col.label}</div>
+                <div>{col.render(url)}</div>
+              </div>
+            ))}
+          </div>
         ))}
-      </tbody>
-    </table>
+      </div>
+    </>
   );
 };
 
