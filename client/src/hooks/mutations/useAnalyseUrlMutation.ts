@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "../../lib/api";
 import { URLS_QUERY_KEY } from "../queries/useUrlsQuery";
 import { ANALYSE_URL_ROUTE } from "../../lib/routes";
+import toast from "react-hot-toast";
 
 /**
  * Custom hook to analyse a URL.
@@ -20,6 +21,7 @@ export const useAnalyseUrlMutation = () => {
         payload: { address },
       }),
     onSuccess: () => {
+      toast.success("URL analysis started.");
       queryClient.invalidateQueries({ queryKey: [URLS_QUERY_KEY] });
     },
   });

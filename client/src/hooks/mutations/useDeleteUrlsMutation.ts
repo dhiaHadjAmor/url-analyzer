@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { request } from "../../lib/api";
 import { URLS_QUERY_KEY } from "../queries/useUrlsQuery";
 import { URLS_ROUTE } from "../../lib/routes";
+import toast from "react-hot-toast";
 
 export const useDeleteUrlsMutation = () => {
   const queryClient = useQueryClient();
@@ -14,6 +15,7 @@ export const useDeleteUrlsMutation = () => {
         payload: { ids },
       }),
     onSuccess: () => {
+      toast.success("URL analysis deleted.");
       queryClient.invalidateQueries({ queryKey: [URLS_QUERY_KEY] });
     },
   });

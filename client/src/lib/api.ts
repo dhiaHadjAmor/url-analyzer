@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
@@ -62,6 +64,9 @@ export async function request<TResponse = unknown, TPayload = unknown>({
     return data;
   } catch (error) {
     console.error(`❌ API Error at ${url}:`, error);
+    // Show a toast notification for errors
+    // You can customize the error message based on the error structure
+    toast.error("Something went wrong. Please try again.");
     throw error;
   }
 }
