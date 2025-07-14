@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { UrlEntry, UrlResult, UrlStatus } from "../../../../../lib/types";
 import Spinner from "../../../../../components/Spinner";
 import Checkbox from "../../../../../components/Checkbox";
+import LoadingColumn from "../../../../../components/LoadingColumn";
 
 export type UrlColumn = {
   key: keyof UrlEntry | keyof UrlResult | "checkbox";
@@ -24,6 +25,10 @@ const statusColors: Record<UrlStatus, string> = {
   running: "bg-blue-100 text-blue-800",
   done: "bg-green-100 text-green-800",
   error: "bg-red-100 text-red-800",
+};
+
+const isUrlLoading = (url: UrlEntry): boolean => {
+  return url.status === "running" || url.status === "queued";
 };
 
 export const getTableColumns = ({
@@ -86,39 +91,61 @@ export const getTableColumns = ({
     sortable: true,
     className: "whitespace-nowrap lg:max-w-40 truncate",
     render: (url) => (
-      <span title={url.result?.pageTitle || ""}>
-        {url.result?.pageTitle || "—"}
-      </span>
+      <LoadingColumn isLoading={isUrlLoading(url)}>
+        <span title={url.result?.pageTitle || ""}>
+          {url.result?.pageTitle || "—"}
+        </span>
+      </LoadingColumn>
     ),
   },
   {
     key: "htmlVersion",
     label: "HTML Version",
     sortable: true,
-    render: (url) => url.result?.htmlVersion ?? "—",
+    render: (url) => (
+      <LoadingColumn isLoading={isUrlLoading(url)}>
+        {url.result?.htmlVersion ?? "—"}
+      </LoadingColumn>
+    ),
   },
   {
     key: "linksInternal",
     label: "#Internal Links",
     sortable: false,
-    render: (url) => url.result?.linksInternal ?? 0,
+    render: (url) => (
+      <LoadingColumn isLoading={isUrlLoading(url)}>
+        {url.result?.linksInternal ?? 0}
+      </LoadingColumn>
+    ),
   },
   {
     key: "linksExternal",
     label: "#External Links",
     sortable: false,
-    render: (url) => url.result?.linksExternal ?? 0,
+    render: (url) => (
+      <LoadingColumn isLoading={isUrlLoading(url)}>
+        {url.result?.linksExternal ?? 0}
+      </LoadingColumn>
+    ),
   },
   {
     key: "brokenLinks",
     label: "#Broken Links",
     sortable: false,
-    render: (url) => url.result?.brokenLinks?.length ?? 0,
+    render: (url) => (
+      <LoadingColumn isLoading={isUrlLoading(url)}>
+        {url.result?.brokenLinks?.length ?? 0}
+      </LoadingColumn>
+    ),
   },
   {
     key: "hasLoginForm",
     label: "Login Form",
     sortable: false,
-    render: (url) => (url.result?.hasLoginForm ? "Yes" : "No"),
+    render: (url) => (
+      <LoadingColumn isLoading={isUrlLoading(url)}>
+        {url.result?.hasLoginForm ? "Yes" : "No"}
+      </LoadingColumn>
+    ),
   },
 ];
