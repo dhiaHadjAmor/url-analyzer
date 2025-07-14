@@ -1,10 +1,10 @@
 # 🌐 URL Analyzer
 
-A fullstack web application to analyze URLs in real-time, extract metadata, evaluate link structures, detect broken links, and more.
+A fullstack web application to analyze URLs in real-time, extract metadata, detect broken links, and more.
 
 - **Frontend:** Vite + React + TypeScript + Tailwind CSS + TanStack Query
 - **Backend:** Go + Gin + GORM + MySQL
-- **DevOps & Tooling:** Docker
+- **Containerization:** Docker
 - **Testing:** Vitest + React Testing Library
 
 ---
@@ -54,7 +54,7 @@ git clone https://github.com/dhiaHadjAmor/url-analyzer.git
 cd url-analyzer
 ```
 
-### Start via Docker
+### Start via Docker (Recommended)
 
 ```bash
 docker-compose up --build
